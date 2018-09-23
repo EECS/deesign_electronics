@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block bodeScripts %}
+<script src="{{ static }}design_center/js/d3.v3.min.js"></script>
+<script src="{{ static }}design_center/js/jquery.min.js"></script>
+<script src="{{ static }}design_center/js/bootstrap.min.js"></script>
+
+{% endblock %}
+
+{% block dynamicPlots %}
+  <script>
+    //Global variable for range of bode plots on the x-axis
+    range = JSON.parse('{{ bode_x_range_output_impedance }}');
+    mags_output_impedance = JSON.parse('{{ mags_output_impedance }}');
+    phases_output_impedance = JSON.parse('{{ phases_output_impedance }}');
+    mags_min_output_impedance = JSON.parse('{{ mags_min_output_impedance }}');
+    mags_max_output_impedance = JSON.parse('{{ mags_max_output_impedance }}');
+    phase_min_output_impedance = JSON.parse('{{ phase_min_output_impedance }}');
+    phase_max_output_impedance = JSON.parse('{{ phase_max_output_impedance }}');
+    out_imped_mag_div = "{{ out_imped_mag_div }}";
+    out_imped_phs_div = "{{ out_imped_phs_div }}";
+
+    //Global variables for range of input impedance bode plots
+    mags_input_impedance = JSON.parse('{{ mags_input_impedance }}');
+    phases_input_impedance = JSON.parse('{{ phases_input_impedance }}');
+    mags_min_input_impedance = JSON.parse('{{ mags_min_input_impedance }}');
+    mags_max_input_impedance = JSON.parse('{{ mags_max_input_impedance }}');
+    phase_min_input_impedance = JSON.parse('{{ phase_min_input_impedance }}');
+    phase_max_input_impedance = JSON.parse('{{ phase_max_input_impedance }}');
+    in_imped_mag_div = "{{ in_imped_mag_div }}";
+    in_imped_phs_div = "{{ in_imped_phs_div }}";
+
+    //Global variables for range of input to output transfer bode plots
+    mags_input_output_transfer = JSON.parse('{{ mags_input_output_transfer }}');
+    phases_input_output_transfer = JSON.parse('{{ phases_input_output_transfer }}');
+    mags_min_input_output_transfer = JSON.parse('{{ mags_min_input_output_transfer }}');
+    mags_max_input_output_transfer = JSON.parse('{{ mags_max_input_output_transfer }}');
+    phase_min_input_output_transfer = JSON.parse('{{ phase_min_input_output_transfer }}');
+    phase_max_input_output_transfer = JSON.parse('{{ phase_max_input_output_transfer }}');
+    in_out_mag_div = "{{ in_out_mag_div }}";
+    in_out_phs_div = "{{ in_out_phs_div }}";
+
+    //Global variables for range of duty to output transfer bode plots
+    mags_duty_output_transfer = JSON.parse('{{ mags_duty_output_transfer }}');
+    phases_duty_output_transfer = JSON.parse('{{ phases_duty_output_transfer }}');
+    mags_min_duty_output_transfer = JSON.parse('{{ mags_min_duty_output_transfer }}');
+    mags_max_duty_output_transfer = JSON.parse('{{ mags_max_duty_output_transfer }}');
+    phase_min_duty_output_transfer = JSON.parse('{{ phase_min_duty_output_transfer }}');
+    phase_max_duty_output_transfer = JSON.parse('{{ phase_max_duty_output_transfer }}');
+    duty_out_mag_div = "{{ duty_out_mag_div }}";
+    duty_out_phs_div = "{{ duty_out_phs_div }}";
+  </script>
+
+{% endblock %}
+
+{% block pageStyles%}
+<link rel="stylesheet" href="{{ static }}design_center/css/styles.css">
+{% endblock %}
+
+{% block ee_content %}
+<div>
+    {% if analyzed_circuit_object.dcdc_type %}
+        <h1>{{analyzed_circuit_object.dcdc_type}} {{ analyzed_circuit_object.name }}</h1>
+    {%else%}
+        <h1>THIS SHOULDN'T BE POSSIBLE.</h1>
+    {% endif %}
+
+    <div id="ee-content-picture">
+        <img src="{{ static }}design_center/img/{{analyzed_circuit_object.url}}.jpg" class="rounded" alt="Picture of Circuit to be analyzed.">
+    </div>
+
+    <div id="ee-content-description">
+        <h3><u>Circuit Description:</u></h3>
+        <p class="left-text">{{analyzed_circuit_object.description|safe}}</p>
+    </div>
+
+    <div id="ee-content-input-params">
+        <h3><u>Design Parameters for Component Selection:</u></h3>
+            <p class="left-text">
+                Please enter the design parameters for the converter below to be used
+                to recommend component sizing in the converter.
+            </p>
+            
+
+        <form id='input-param-form' class="uniForm" method='post' data-autosubmit>
+            {{design_param_form|crispy}}
+            <div>
+                <input type='hidden' name='csrfmiddlewaretoken' value='{{ csrf_token }}' />
+                <input type="hidden" name="submitdesignparams">
+                <input type="submit" name="submitform" value="Enter Design Parameters" class="btn btn-primary" id="submit-id-submitdesignparams">
+            </div>
+        </form>
+
+    </div>
+
+    <div id="ee-content-rec-comps">
+        <h3><u>Recommended Component Values:</u></h3>
+        
+        <p class="left-text">
+            {% for component in rec_dcdc_comps %}
+                {{rec_dcdc_comps[loop.index0][0]}}, {{rec_dcdc_comps[loop.index0][1]}} Selection Equation: <span lang="latex">{{rec_dcdc_comps[loop.index0][2]}}</span> <br><br>
+            {% endfor %}
+            <br>
+
+            <span class="error" id="ee-content-rec-comps-ajax-errors">
+            </span>
+
+            <span id="ee-content-rec-comps-ajax" >
+                {% for component in rec_dcdc_comps %}
+                    {{rec_dcdc_comps[loop.index0][0]}}, {{rec_dcdc_comps[loop.index0][1]}} Value: {{rec_dcdc_comps[loop.index0][3]}} <br>
+                {% endfor %}
+            </span>
+        </p>
+    </div>
+
+    <div id="ee-content-sel-comps">
+        <h3><u>Selected Component Values:</u></h3>
+        <p class="left-text">
+            Please enter the selected component values for the converter below.
+        </p>
+
+        <form id='input-param-form' class="form-horizontal" method='post' data-analysissubmit>
+            {{design_comp_form|crispy}}
+            <div>
+                <input type='hidden' name='csrfmiddlewaretoken' value='{{ csrf_token }}' />
+                <input type="hidden" name="submitcompvalues">
+                <input type="submit" name="submitform" value="Generate Converter Analysis" class="btn btn-primary" id="submit-id-submitcompparams">
+            </div>
+        </form>
+    </div>
+
+    <div id="ee-content-analysis-results">
+        <h3><u>Analysis Results of Converter:</u></h3>
+        <p class="left-text">
+            {% for component in analyzed_equations %}
+                {{analyzed_equations[loop.index0][0]}} Equation: <span lang="latex">{{analyzed_equations[loop.index0][1]}}</span> <br><br>
+            {% endfor %}
+            <br>
+
+            <span class="error" id="ee-content-analysis-ajax-errors">
+            </span>
+
+            <span id="ee-content-analysis-ajax" >
+                {% for component in analyzed_equations %}
+                {{analyzed_equations[loop.index0][0]}} Value: {{analyzed_equations[loop.index0][2]}} <br><br>
+                {% endfor %}
+            </span>
+        </p>
+    </div>
+
+    <div>
+        <form action = "" method = "post" gen-openloop-bodeplot>
+            <input type='hidden' name='csrfmiddlewaretoken' value='{{ csrf_token }}' />
+            <input type="hidden" name="generateopenplots">
+            <input type="submit" name="submitform" value="Generate Open-Loop Bode Plots" class="btn btn-primary" id="submit-id-generateopenplots">
+        </form>
+    </div>
+
+    <span class="error left-text" id="ee-open-bode-ajax-errors">
+    </span>
+
+    <div>
+        <h3><u>Open Loop Bode Plots:</u></h3>
+    </div>
+
+    <div id="bode-plots">
+        <div class="black-border">
+          <h4>Duty Cycle to Output Voltage Transfer Function Bode Plots</h4>
+          <div id= {{ duty_out_mag_div }}></div>
+          <div id= {{ duty_out_phs_div }} style="margin-top: -10px;"></div>
+        </div>
+
+        <div class="black-border">
+          <h4>Output Impedance Bode Plots</h4>
+          <div id= {{ out_imped_mag_div }}></div>
+          <div id= {{ out_imped_phs_div }} style="margin-top: -10px;"></div>
+        </div>
+
+        <div class="black-border">
+          <h4>Input Voltage to Output Voltage Transfer Function Bode Plots</h4>
+          <div id= {{ in_out_mag_div }}></div>
+          <div id= {{ in_out_phs_div }} style="margin-top: -10px;"></div>
+        </div>
+        <div class="black-border">
+          <h4>Input Impedance Bode Plots</h4>
+          <div id= {{ in_imped_mag_div }}></div>
+          <div id= {{ in_imped_phs_div }} style="margin-top: -10px;"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

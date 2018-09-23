@@ -1,0 +1,232 @@
+{% extends "base_generic.html" %}
+
+{% block dynamicPlots %}
+  <script>
+    //Global variable for range of bode plots on the x-axis
+    range = JSON.parse('{{ bode_x_range_output_impedance }}');
+    mags_output_impedance = JSON.parse('{{ mags_output_impedance }}');
+    phases_output_impedance = JSON.parse('{{ phases_output_impedance }}');
+    mags_min_output_impedance = JSON.parse('{{ mags_min_output_impedance }}');
+    mags_max_output_impedance = JSON.parse('{{ mags_max_output_impedance }}');
+    phase_min_output_impedance = JSON.parse('{{ phase_min_output_impedance }}');
+    phase_max_output_impedance = JSON.parse('{{ phase_max_output_impedance }}');
+    out_imped_mag_div = "{{ out_imped_mag_div }}";
+    out_imped_phs_div = "{{ out_imped_phs_div }}";
+
+    //Global variables for range of input impedance bode plots
+    mags_input_impedance = JSON.parse('{{ mags_input_impedance }}');
+    phases_input_impedance = JSON.parse('{{ phases_input_impedance }}');
+    mags_min_input_impedance = JSON.parse('{{ mags_min_input_impedance }}');
+    mags_max_input_impedance = JSON.parse('{{ mags_max_input_impedance }}');
+    phase_min_input_impedance = JSON.parse('{{ phase_min_input_impedance }}');
+    phase_max_input_impedance = JSON.parse('{{ phase_max_input_impedance }}');
+    in_imped_mag_div = "{{ in_imped_mag_div }}";
+    in_imped_phs_div = "{{ in_imped_phs_div }}";
+
+    //Global variables for range of input to output transfer bode plots
+    mags_input_output_transfer = JSON.parse('{{ mags_input_output_transfer }}');
+    phases_input_output_transfer = JSON.parse('{{ phases_input_output_transfer }}');
+    mags_min_input_output_transfer = JSON.parse('{{ mags_min_input_output_transfer }}');
+    mags_max_input_output_transfer = JSON.parse('{{ mags_max_input_output_transfer }}');
+    phase_min_input_output_transfer = JSON.parse('{{ phase_min_input_output_transfer }}');
+    phase_max_input_output_transfer = JSON.parse('{{ phase_max_input_output_transfer }}');
+    in_out_mag_div = "{{ in_out_mag_div }}";
+    in_out_phs_div = "{{ in_out_phs_div }}";
+
+    //Global variables for range of duty to output transfer bode plots
+    mags_duty_output_transfer = JSON.parse('{{ mags_duty_output_transfer }}');
+    phases_duty_output_transfer = JSON.parse('{{ phases_duty_output_transfer }}');
+    mags_min_duty_output_transfer = JSON.parse('{{ mags_min_duty_output_transfer }}');
+    mags_max_duty_output_transfer = JSON.parse('{{ mags_max_duty_output_transfer }}');
+    phase_min_duty_output_transfer = JSON.parse('{{ phase_min_duty_output_transfer }}');
+    phase_max_duty_output_transfer = JSON.parse('{{ phase_max_duty_output_transfer }}');
+    duty_out_mag_div = "{{ duty_out_mag_div }}";
+    duty_out_phs_div = "{{ duty_out_phs_div }}";
+  </script>
+
+{% endblock %}
+
+{% block title %}
+<title>{{header_title}}</title>
+
+{% endblock %}
+
+{% block header %}
+
+<div id = "site-title"class="col-6">
+    <div id="home-button" type="button"> <a href="#home-row">{{header_title}}</a></div>
+</div>
+
+<div id="header-support" class="col-6">
+  <div class="right-hdr-btns"> <a href="#content-row"> Content </a></div>
+  <div class="right-hdr-btns"><a href="#example-design">Example Design</a></div>
+
+  {% if show_testimonials %}
+  <div class="right-hdr-btns"> <a href="">Testimonials</a></div>
+  {% endif %}
+
+  <div class="right-hdr-btns"><a href="{{ design_center_url }}">Design Center</a></div>
+  <div class="right-hdr-btns"><a href="#contact-row">Contact</a></div>
+  {% if paid_site%}
+  <div class="right-hdr-btns">Try Free for {{trial_length}} Days </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block home %}
+<div id="home-row-content" class="justify-center">
+    <div>
+        <h1>Professional circuit design in 5 minutes.</h1>
+        {% for i in tag_break_lines %}
+        <br>
+        {% endfor %}
+    </div>
+
+    <div id="home-row-picture">
+      <img src="{{ static }}landing_page/img/ccm-buck-converter.jpg" alt="Buck Converter" height="400 px">
+    </div>
+
+    <div>
+        <h2>Design Electronics provides a simplified understanding to complex circuit design problems.</h2>
+        <br>
+        {% if paid_site%}
+        <button type="button" class="btn btn-primary">Try Free for {{trial_length}} Days</button>
+        <br>
+        <p>or <u>purchase now</u>.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block content %}
+<div id="content-row-header">
+    <h3>Design Center Tools</h3>
+</div>
+
+<!-- Card deck portion of the landing page -->
+<div id="content-row-content">
+    <h4>
+    The design center houses all of the tools that are needed to simplify circuit design. <br><br>
+
+    Whereas other resources provide equations and cookie-cutter solutions to designs, the design center will give the designer an intuitive understanding of the mechanics of
+    the design, enabling a deep understanding of the circuitry and ability to intelligently modify the design after construction.<br><br>
+
+    The main tool that is housed in the Design Center is the bode plot. The ability to see the bode plot of a system allows a designer to understand the full range of 
+    operation of a system. The designer can rapidly change the input parameters of a system and understand its behavior to a wide variety of scenarios instantly.
+    </h4>
+</div>
+
+<div class="card-deck" id="content-row-summary">
+  {% if show_power_electronics %}
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Power Electronics</h4>
+        <ul>
+          <li>Switch Mode Power Supplies</li>
+      </ul>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if show_ana_electronics %}
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Analog Electronics</h4>
+        <ul>
+          <li>Switch Mode Power Supplies</li>
+      </ul>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if show_dig_electronics %}
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Digital Electronics</h4>
+        <ul>
+          <li>Digital Circuit Design</li>
+          <li>FPGA Design</li>
+      </ul>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block example_design %}
+<div id="example-design-content">
+    <div id="example-title">
+      <h3>Example Design in the Design Center</h4>
+    </div>
+
+    <div id="example-design-picture">
+      <img src="{{ static }}landing_page/img/buck-converter.jpg" alt="Buck Converter" height="400 px">
+    </div>
+
+    <div id="example-design-input-title">
+      <h4>Input Parameters</h4>
+    </div>
+
+    <div id="example-parameters">
+      <div id="example-parameters-left-column">
+        <p>Input Voltage: {{input_voltage}} V</p>
+        <p>Output Current: {{output_current}} A</p>
+        <p>Output Capacitance: {{capacitance}} &micro;F</p>
+        <p>Output Capacitor Resistance: {{capacitor_res}} m&#8486;</p>
+        <p>D1 On Voltage: {{d1_on_volt}} V</p>
+      </div>
+
+      <div id="example-parameters-right-column">
+        <p>Output Voltage: {{output_voltage}} V</p>
+        <p>Output Inductance: {{inductance}} &micro;H</p>
+        <p>Inductor DC Resistance: {{inductor_res}} m&#8486;</p>
+        <p>Q1 On Resistance: {{q1_on_res}} m&#8486;</p>
+      </div>
+    </div>
+
+    <div>
+      <form action = "" method = "post" gen-openloop-bodeplot>
+            <input type='hidden' name='csrfmiddlewaretoken' value='{{ csrf_token }}' />
+            <input type="hidden" name="generateopenplots">
+            <input type="submit" name="submitform" value="Generate Open-Loop Bode Plots" class="btn btn-primary" id="submit-id-generateopenplots">
+      </form>
+    </div>
+
+    <div id="example-design-row-plots">
+        <div class="black-border margin-top">
+            <h4>Duty Cycle to Output Voltage Transfer Function Bode Plots</h4>
+            <div id= {{ duty_out_mag_div }}></div>
+            <div id= {{ duty_out_phs_div }} style="margin-top: -10px;"></div>
+        </div>
+
+        <div class="black-border">
+            <h4>Output Impedance Bode Plots</h4>
+            <div id= {{ out_imped_mag_div }}></div>
+            <div id= {{ out_imped_phs_div }} style="margin-top: -10px;"></div>
+        </div>
+    
+        <div class="black-border">
+            <h4>Input Voltage to Output Voltage Transfer Function Bode Plots</h4>
+            <div id= {{ in_out_mag_div }}></div>
+            <div id= {{ in_out_phs_div }} style="margin-top: -10px;"></div>
+        </div>
+        <div class="black-border">
+            <h4>Input Impedance Bode Plots</h4>
+            <div id= {{ in_imped_mag_div }}></div>
+            <div id= {{ in_imped_phs_div }} style="margin-top: -10px;"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block contact_row %}
+<div id="contact-row-content">
+    <h4>Contact me using the link below:</h4>
+    <a href= "https://www.linkedin.com/in/jacobshannon/" target="_blank">
+        <i class="fab fa-linkedin fa-7x"></i>
+    </a>
+</div>
+{% endblock %}
