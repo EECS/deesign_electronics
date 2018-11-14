@@ -31,7 +31,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'circuit_designs.apps.CircuitDesignsConfig',
     'landing_page.apps.LandingPageConfig',
     'design_center.apps.DesignCenterConfig',
     'crispy_forms',
